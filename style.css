@@ -174,39 +174,80 @@ button:hover {
 
 /* Responsive styles for mobile */
 @media (max-width: 600px) {
-  .clean-navbar {
-    padding: 0 4px;
-    margin-bottom: 12px;
-    border-radius: 0;
+  body {
+    padding: 1rem;
+  }
+
+  .container {
+    padding: 1rem !important;
+    border-radius: 8px;
     box-shadow: none;
   }
-  .clean-tab-menu {
-    gap: 4px;
-    justify-content: space-between;
-  }
+
   .clean-tab-menu .tab-item {
-    padding: 8px 6px;
-    font-size: 0.92rem;
+    padding: 6px 4px;
+    font-size: 0.8rem;
     gap: 4px;
-    border-radius: 4px;
+    flex-direction: column;
+    align-items: center;
   }
-  .container {
-    padding: 10px !important;
+
+  .clean-tab-menu .tab-item span {
+    font-size: 0.7rem;
   }
-  #dashboard-container h2,
-  #login-container h2 {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-  }
+
   .tab-content h3 {
     font-size: 1rem;
+    margin-bottom: 0.5rem;
   }
+
   input, select, button {
-    font-size: 0.95rem !important;
-    padding: 8px !important;
-    margin-bottom: 8px !important;
+    font-size: 0.85rem !important;
+    padding: 6px !important;
+    margin-bottom: 10px !important;
+  }
+
+  #searchInput {
+    font-size: 0.85rem;
+  }
+
+  .member-card {
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+  }
+
+  .member-image {
+    margin-right: 0;
+    margin-bottom: 8px;
+  }
+
+  .member-details {
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  .member-details button {
+    font-size: 0.75rem;
+    padding: 4px 6px;
+    margin: 3px;
+  }
+
+  #editModal > div {
+    width: 90%;
+    padding: 1rem;
+  }
+
+  #editModal h3 {
+    font-size: 1.1rem;
+  }
+
+  #editModal input, #editModal select {
+    font-size: 0.9rem;
+    padding: 6px;
   }
 }
+
 
 /* Remove legacy/double styles below this line */
 /* (All previous .navbar, .tab-navbar, .tab-btn, .tab-menu, etc. are now replaced by the above) */

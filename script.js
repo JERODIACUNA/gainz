@@ -54,7 +54,7 @@ function logout() {
   });
 }
 let allMembers = [];
-
+let displayedMembers = []; // Add this at the top, outside any function
 function showDashboard() {
   document.getElementById("login-container").classList.add("hidden");
   document.getElementById("dashboard-container").classList.remove("hidden");
@@ -69,6 +69,7 @@ function loadMemberData() {
   db.collection("members").get().then(snapshot => {
     const now = new Date();
     const updates = [];
+    const tempMembers = [];
 
     snapshot.forEach(doc => {
       const data = doc.data();
@@ -84,7 +85,7 @@ function loadMemberData() {
         updates.push(db.collection("members").doc(id).update({ status: currentStatus }));
       }
 
-      displayedMembers.push({
+      tempMembers.push({
         id,
         name: data.name,
         type: data.type,
@@ -95,8 +96,16 @@ function loadMemberData() {
       });
     });
 
-    renderFilteredMembers();
-    Promise.all(updates).catch(err => console.error("Status update error:", err));
+    Promise.all(updates)
+      .then(() => {
+        displayedMembers = tempMembers;
+        renderFilteredMembers();
+      })
+      .catch(err => {
+        displayedMembers = tempMembers;
+        renderFilteredMembers();
+        console.error("Status update error:", err);
+      });
   });
 }
 
@@ -290,7 +299,7 @@ function addMember() {
       message.textContent = "✅ Member added successfully!";
       document.getElementById("newName").value = "";
       updateMembershipDetails();
-      showTab('members');
+      
       loadMemberData(); // refresh list
     })
     .catch(err => {
