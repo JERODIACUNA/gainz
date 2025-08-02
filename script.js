@@ -134,8 +134,14 @@ function renderFilteredMembers() {
       Price: ₱${member.price}<br>
       Expires: ${member.expires}<br>
       Status: ${statusTag}<br><br>
-      <button onclick="editMember('${member.id}')">✏️ Edit</button>
-      <button onclick="deleteMember('${member.id}')">🗑️ Delete</button>
+      <button class="edit-btn" onclick="editMember('${member.id}')">
+  <i data-feather="edit-2"></i> Edit
+</button>
+<button class="delete-btn" onclick="deleteMember('${member.id}')">
+  <i data-feather="trash-2"></i> Delete
+</button>
+
+
     </div>
   </div>
 `;

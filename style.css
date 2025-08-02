@@ -21,7 +21,7 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 1200px;
-  min-height: 85vh;
+  min-height: 130vh;
   margin: 1rem auto 0 auto;
   display: flex;
   flex-direction: column;
@@ -47,17 +47,54 @@ button {
 button:hover {
   background: #218838;
 }
+
+.edit-btn {
+  background: #28a745;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+.edit-btn:hover {
+  background: #218838;
+}
+
+.delete-btn {
+  background: #dc3545;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background: #c82333;
+}
+
 .hidden {
   display: none;
 }
 
 /* Member list */
 #member-list {
-  max-height: 400px;
+  max-height: 87vh;
   overflow-y: auto;
+  overflow-x: hidden;
   margin-top: 1rem;
-  padding-right: 0.5rem;
-   box-shadow: 0 2px 8px rgba(0,0,0,0.24);
+  padding-right: 0rem;
+  
+
+  /* Hide scrollbar for Chrome, Safari, Opera */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+#member-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 /*edit member*/
 #editModal {
@@ -79,8 +116,8 @@ button:hover {
     background: #fff;
     border-radius: 10px;
     padding: 10px;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin: 10.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
   .member-image {
@@ -101,12 +138,14 @@ button:hover {
     flex: 1;
   }
 
-  .member-details button {
-    margin-top: 5px;
-    padding: 4px 8px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+.member-details button {
+  margin-top: 5px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
 
 
 /* Tab navigation (clean navbar) */
@@ -114,7 +153,7 @@ button:hover {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  margin-bottom: 24px;
+ 
   padding: 0 ;
 }
 .clean-tab-menu {
@@ -173,20 +212,21 @@ button:hover {
 }
 
 /* Responsive styles for mobile */
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   body {
     padding: 1rem;
   }
 
   .container {
-    padding: 1rem !important;
+    padding: 0.75rem !important;
     border-radius: 8px;
     box-shadow: none;
+    min-height: auto;
   }
 
   .clean-tab-menu .tab-item {
-    padding: 6px 4px;
-    font-size: 0.8rem;
+    padding: 6px 2px;
+    font-size: 0.75rem;
     gap: 4px;
     flex-direction: column;
     align-items: center;
@@ -202,10 +242,15 @@ button:hover {
   }
 
   input, select, button {
-    font-size: 0.85rem !important;
-    padding: 6px !important;
+    font-size: 0.8rem !important;
+    padding: 5px !important;
     margin-bottom: 10px !important;
   }
+
+  button, .edit-btn, .delete-btn {
+  min-height: 44px;
+}
+
 
   #searchInput {
     font-size: 0.85rem;
@@ -224,14 +269,13 @@ button:hover {
 
   .member-details {
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
 
   .member-details button {
-    font-size: 0.75rem;
-    padding: 4px 6px;
-    margin: 3px;
-  }
+  min-width: 100px;
+  padding: 6px 12px;
+}
 
   #editModal > div {
     width: 90%;
