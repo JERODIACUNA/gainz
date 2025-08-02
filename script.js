@@ -108,7 +108,6 @@ function loadMemberData() {
       });
   });
 }
-
 function renderFilteredMembers() {
   const list = document.getElementById("member-list");
   const search = document.getElementById("searchInput").value.trim().toLowerCase();
@@ -123,28 +122,27 @@ function renderFilteredMembers() {
       ? `<span style="background: #f8d7da; color: #721c24; padding: 2px 6px; border-radius: 4px;">🛑 Expired</span>`
       : `<span style="background: #d4edda; color: #155724; padding: 2px 6px; border-radius: 4px;">⏳ ${member.daysLeft} day${member.daysLeft !== 1 ? "s" : ""} left</span>`;
 
-  const card = `
+const card = `
   <div class="member-card">
     <div class="member-image">
-      <img src="${member.photoURL || 'default.png'}" alt="${member.name}" />
+      <img src="${member.photoURL}" alt="${member.name}" />
     </div>
     <div class="member-details">
       <strong>${member.name}</strong><br>
       Type: ${member.type}<br>
       Price: ₱${member.price}<br>
-      Expires: ${member.expires}<br>
-      Status: ${statusTag}<br><br>
+      Expires: ${new Date(member.expires).toLocaleString()}<br>
+      ${statusTag}<br>
       <button class="edit-btn" onclick="editMember('${member.id}')">
-  <i data-feather="edit-2"></i> Edit
-</button>
-<button class="delete-btn" onclick="deleteMember('${member.id}')">
-  <i data-feather="trash-2"></i> Delete
-</button>
-
-
+        <i data-feather="edit-3"></i> Edit
+      </button>
+      <button class="delete-btn" onclick="deleteMember('${member.id}')">
+        <i data-feather="trash-2"></i> Delete
+      </button>
     </div>
   </div>
 `;
+
 
 
     (member.isExpired ? expiredMembers : activeMembers).push(card);
@@ -305,7 +303,7 @@ function addMember() {
       message.textContent = "✅ Member added successfully!";
       document.getElementById("newName").value = "";
       updateMembershipDetails();
-      
+      showTab('members');
       loadMemberData(); // refresh list
     })
     .catch(err => {

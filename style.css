@@ -4,21 +4,25 @@
 }
 body {
   font-family: Arial, sans-serif;
-  background: #f4f4f4;
+   background: linear-gradient(to bottom, #ffffff 0%, #6f6f6f 15%, #000000 30%);
   margin: 0;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 2rem;
+  
 }
 
 /* Container */
 .container {
-  background: white;
+  background: rgba(255, 255, 255, 0.15); /* semi-transparent white */
+  backdrop-filter: blur(10px); /* blur the background */
+  -webkit-backdrop-filter: blur(10px); /* for Safari */
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   width: 100%;
   max-width: 1200px;
   min-height: 130vh;
@@ -26,6 +30,20 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+#login-container {
+  max-width: 400px;
+  width: 100%;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  margin-top: 5vh;
+  min-height: 50vh;
+  align-items: center;
+}
+
 
 /* Inputs and buttons */
 input, select, button {
@@ -38,38 +56,80 @@ input, select, button {
   font-size: 1rem;
 }
 button {
-  background: #28a745;
-  color: white;
-  border: none;
+   background: rgba(255, 255, 255, 0.05); /* semi-transparent white */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  color: #dddddd;
+  transition: all 0.4s ease;
   cursor: pointer;
-  transition: background 0.2s;
+  position: relative;
+  overflow: hidden;
+   padding: 1rem;
+   margin-top: 20px;
+  z-index: 0;
 }
 button:hover {
-  background: #218838;
+   transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  
+}
+button::before{
+    content: '';
+  position: absolute;
+  top: -100%;
+  left: -0%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    0deg,
+    transparent,
+    transparent 30%,
+    rgba(0, 255, 255, 0.3)
+  );
+  transform: rotate(-45deg);
+  transition: all 0.8s ease;
+  opacity: 0;
+  z-index: 1;
 }
 
 .edit-btn {
-  background: #28a745;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none;
-  margin-top: 5px;
+   background: rgba(44, 44, 44, 0.9); /* semi-transparent white */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  color: #ffffff;
+  transition: all 0.4s ease;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+   padding: 1rem;
+   margin-top: 20px;
+  z-index: 0;
 }
 
 .edit-btn:hover {
-  background: #218838;
+  background: #222222;
+     transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .delete-btn {
-  background: #dc3545;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none;
-  margin-top: 5px;
+   background: rgb(255, 44, 44); /* semi-transparent white */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  color: #dddddd;
+  transition: all 0.4s ease;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+   padding: 1rem;
+   margin-top: 20px;
+  z-index: 0;
 }
 
 .delete-btn:hover {
@@ -181,12 +241,12 @@ button:hover {
   font-size: 1rem;
 }
 .clean-tab-menu .tab-item.active{
-  background: #4b87fd;
+  background: rgba(61, 61, 61, 0.8);
   color: #000000;
 }
 .clean-tab-menu .tab-item:hover {
-  background: #f2f4f8;
-  color: #007bff;
+  background: rgba(61, 61, 61, 0.2);
+  color: rgba(61, 61, 61, 1);
 }
 .clean-tab-menu .tab-item i {
   width: 20px;
@@ -205,7 +265,7 @@ button:hover {
 
 /* Tab content */
 .tab-content {
-  margin-top: 1rem;
+  margin-top: 0rem;
 }
 .tab-content.hidden {
   display: none;
