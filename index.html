@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Gym System</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <div class="container" id="login-container">
+    <h2>Admin Login</h2>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button onclick="login()">Login</button>
+    <p id="error-message"></p>
+  </div>
+
+  <div class="container hidden" id="dashboard-container">
+    <h2>Welcome, Admin</h2>
+    <nav class="tab-navbar-horizontal clean-navbar">
+      <ul class="tab-menu clean-tab-menu">
+        <li class="tab-item" onclick="showTab('members')">
+          <i data-feather="users"></i>
+          <span>Members</span>
+        </li>
+        <li class="tab-item" onclick="showTab('add')">
+          <i data-feather="folder-plus"></i>
+          <span>Add Member</span>
+        </li>
+        <li class="tab-item logout-tab" onclick="logout()">
+          <i data-feather="log-out"></i>
+        </li>
+      </ul>
+    </nav>
+
+    <div id="tab-members" class="tab-content">
+      <h3>All Members</h3>
+      <input type="text" id="searchInput" placeholder="🔍 Search members..." oninput="filterMembers()" style="width: 100%; padding: 8px; margin-bottom: 10px; font-size: 1rem;">
+      <div id="member-list"></div>
+    </div>
+
+    <div id="tab-add" class="tab-content hidden">
+      <h3>Add New Member</h3>
+      <input type="text" id="newName" placeholder="Full Name" required />
+      <select id="memberType" onchange="updateMembershipDetails()">
+        <option value="Regular">Regular (₱600)</option>
+        <option value="Student">Student (₱500)</option>
+      </select>
+      <label for="startDate">Start Date</label>
+      <input type="datetime-local" id="startDate" />
+      <label for="expiresAt">Expires At</label>
+      <input type="datetime-local" id="expiresAt" />
+      <p>Price: ₱<span id="priceDisplay">600</span></p>
+      <button onclick="addMember()">Add Member</button>
+      <p id="addMessage"></p>
+    </div>
+  </div>
+
+  <div id="editModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#00000099; justify-content:center; align-items:center; z-index:999;">
+    <div style="background:white; padding:20px; border-radius:8px; width:300px;">
+      <h3>Edit Member</h3>
+      <input id="editName" type="text" placeholder="Name" style="width:100%; margin-bottom:10px;"><br>
+      <select id="editType" style="width:100%; margin-bottom:10px;">
+        <option value="Regular">Regular</option>
+        <option value="Student">Student</option>
+      </select><br>
+      <label>Start:</label><br>
+      <input id="editStart" type="datetime-local" style="width:100%; margin-bottom:10px;"><br>
+      <label>Expires:</label><br>
+      <input id="editExpires" type="datetime-local" style="width:100%; margin-bottom:10px;"><br>
+      <div style="text-align:right;">
+        <button onclick="saveEdit()" style="background:#28a745; color:white; padding:5px 10px; margin-right:5px;">💾 Save</button>
+        <button onclick="closeEditModal()" style="background:#6c757d; color:white; padding:5px 10px;">Cancel</button>
+      </div>
+      <p id="editMessage" style="color:red; font-size:0.9rem;"></p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <script>feather.replace()</script>
+</body>
+</html>

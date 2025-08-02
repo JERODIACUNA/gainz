@@ -1,0 +1,212 @@
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+}
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+}
+
+/* Container */
+.container {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
+  min-height: 85vh;
+  margin: 1rem auto 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Inputs and buttons */
+input, select, button {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+button {
+  background: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover {
+  background: #218838;
+}
+.hidden {
+  display: none;
+}
+
+/* Member list */
+#member-list {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: 1rem;
+  padding-right: 0.5rem;
+   box-shadow: 0 2px 8px rgba(0,0,0,0.24);
+}
+/*edit member*/
+#editModal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: #00000099;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+#editModal:not(.hidden) {
+  display: flex;
+}
+
+  .member-card {
+    display: flex;
+    align-items: flex-start;
+    background: #fff;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .member-image {
+    flex: 1 0 60px;
+    height: 60px;
+    margin-right: 15px;
+  }
+
+  .member-image img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc;
+  }
+
+  .member-details {
+    flex: 1;
+  }
+
+  .member-details button {
+    margin-top: 5px;
+    padding: 4px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+
+/* Tab navigation (clean navbar) */
+.clean-navbar {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin-bottom: 24px;
+  padding: 0 ;
+}
+.clean-tab-menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  justify-content: flex-start;
+}
+.clean-tab-menu .tab-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  color: #222;
+  font-weight: 500;
+  font-size: 1rem;
+}
+.clean-tab-menu .tab-item.active{
+  background: #4b87fd;
+  color: #000000;
+}
+.clean-tab-menu .tab-item:hover {
+  background: #f2f4f8;
+  color: #007bff;
+}
+.clean-tab-menu .tab-item i {
+  width: 20px;
+  height: 20px;
+  color: inherit;
+}
+.clean-tab-menu .logout-tab {
+  margin-left: auto;
+  gap: 0;
+  padding-right: 0;
+  padding-left: 0;
+}
+.clean-tab-menu .logout-tab span {
+  display: none;
+}
+
+/* Tab content */
+.tab-content {
+  margin-top: 1rem;
+}
+.tab-content.hidden {
+  display: none;
+}
+
+/* Responsive styles for mobile */
+@media (max-width: 600px) {
+  .clean-navbar {
+    padding: 0 4px;
+    margin-bottom: 12px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .clean-tab-menu {
+    gap: 4px;
+    justify-content: space-between;
+  }
+  .clean-tab-menu .tab-item {
+    padding: 8px 6px;
+    font-size: 0.92rem;
+    gap: 4px;
+    border-radius: 4px;
+  }
+  .container {
+    padding: 10px !important;
+  }
+  #dashboard-container h2,
+  #login-container h2 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  .tab-content h3 {
+    font-size: 1rem;
+  }
+  input, select, button {
+    font-size: 0.95rem !important;
+    padding: 8px !important;
+    margin-bottom: 8px !important;
+  }
+}
+
+/* Remove legacy/double styles below this line */
+/* (All previous .navbar, .tab-navbar, .tab-btn, .tab-menu, etc. are now replaced by the above) */
