@@ -14,7 +14,7 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 // Your admin UID (replace this with actual one)
-const ADMIN_UID = "XVoI7gzRTwNHfSMoTeDYwWuvE9Q2";
+//const ADMIN_UID = "XVoI7gzRTwNHfSMoTeDYwWuvE9Q2";
 
 // Format Firestore Timestamp to readable string
 function formatDateTime(date) {
@@ -35,17 +35,70 @@ function login() {
 
   auth.signInWithEmailAndPassword(email, password)
     .then(userCredential => {
-      if (userCredential.user.uid === ADMIN_UID) {
-        showDashboard();
-      } else {
-        auth.signOut();
-        errorMessage.textContent = "Unauthorized user.";
-      }
+      db.collection("admins")
+  .where("email", "==", userCredential.user.email)
+  .get()
+  .then(snapshot => {
+    if (!snapshot.empty) {
+      showDashboard();
+    } else {
+      auth.signOut();
+      showErrorModal("❌ Unauthorized user. Admin access only.");
+    }
+  });
     })
     .catch(error => {
-      errorMessage.textContent = error.message;
+      let friendlyMessage = error.message;
+
+if (error.code === "auth/invalid-email") {
+  friendlyMessage = "Please enter a valid email address (e.g., example@email.com).";
+} else if (error.code === "auth/user-not-found") {
+  friendlyMessage = "No account found with this email.";
+} else if (error.code === "auth/wrong-password") {
+  friendlyMessage = "Incorrect password. Please try again.";
+}
+
+showErrorModal(friendlyMessage);
     });
 }
+function resetPassword() {
+  const email = document.getElementById("email").value.trim();
+
+  if (!email) {
+    showErrorModal("⚠️ Please enter your email address.");
+    return;
+  }
+
+  // Only allow reset if the email matches the admin account
+  db.collection("admins")
+  .where("email", "==", email)
+  .get()
+  .then(snapshot => {
+    if (!snapshot.empty) {
+      return auth.sendPasswordResetEmail(email);
+    } else {
+      throw new Error("unauthorized");
+    }
+  })
+  .then(() => {
+    showErrorModal("✅ A password reset link has been sent to your admin email.");
+  })
+  .catch((error) => {
+    let message = "An error occurred. Please try again.";
+    if (error.message === "unauthorized") {
+      message = "❌ This email is not authorized for admin access.";
+    } else if (error.code === "auth/invalid-email") {
+      message = "Please enter a valid email address.";
+    } else if (error.code === "auth/user-not-found") {
+      message = "No admin account found with this email.";
+    }
+    showErrorModal(message);
+    console.error(error);
+  });
+}
+
+
+
 
 function logout() {
   auth.signOut().then(() => {
@@ -77,6 +130,7 @@ function loadMemberData() {
 
       const expiresDate = data.expiresAt.toDate();
       const timeDiff = expiresDate - now;
+      const startDate = data.startDate.toDate();
       const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
       const isExpired = timeDiff < 0;
 
@@ -85,15 +139,18 @@ function loadMemberData() {
         updates.push(db.collection("members").doc(id).update({ status: currentStatus }));
       }
 
-      tempMembers.push({
-        id,
-        name: data.name,
-        type: data.type,
-        price: data.price,
-        expires: formatDateTime(expiresDate),
-        daysLeft,
-        isExpired
-      });
+tempMembers.push({
+  id,
+  name: data.name,
+  type: data.type,
+  price: data.price,
+  start: data.startDate.toDate(),
+  expires: data.expiresAt.toDate(),
+  daysLeft,
+  isExpired,
+  photoURL: data.photoURL || "default.jpg" // optional fallback
+});
+
     });
 
     Promise.all(updates)
@@ -111,12 +168,22 @@ function loadMemberData() {
 function renderFilteredMembers() {
   const list = document.getElementById("member-list");
   const search = document.getElementById("searchInput").value.trim().toLowerCase();
+  const typeFilter = document.getElementById("typeFilter").value;
+  const statusFilter = document.getElementById("statusFilter").value;
 
   const activeMembers = [];
   const expiredMembers = [];
 
   displayedMembers.forEach(member => {
+    // Apply search filter
     if (!member.name.toLowerCase().includes(search)) return;
+
+    // Apply type filter
+    if (typeFilter && member.type !== typeFilter) return;
+
+    // Apply status filter
+    const status = member.isExpired ? "expired" : "active";
+    if (statusFilter && status !== statusFilter) return;
 
     const statusTag = member.isExpired
       ? `<span style="background: #f8d7da; color: #721c24; padding: 2px 6px; border-radius: 4px;">🛑 Expired</span>`
@@ -131,13 +198,19 @@ const card = `
       <strong>${member.name}</strong><br>
       Type: ${member.type}<br>
       Price: ₱${member.price}<br>
+      Start: ${new Date(member.start).toLocaleString()}<br>
       Expires: ${new Date(member.expires).toLocaleString()}<br>
       ${statusTag}<br>
-      <button class="edit-btn" onclick="editMember('${member.id}')">
-        <i data-feather="edit-3"></i> Edit
-      </button>
+
+      <div class="button-row">
+        <button class="edit-btn" onclick="editMember('${member.id}')">
+          ✏️ Edit
+        </button>
+      <button class="renew-btn" onclick="openRenewModal('${member.id}')">🔄 Renew</button>
+      </div>
+
       <button class="delete-btn" onclick="deleteMember('${member.id}')">
-        <i data-feather="trash-2"></i> Delete
+        🗑️ Delete
       </button>
     </div>
   </div>
@@ -149,6 +222,52 @@ const card = `
   });
 
   list.innerHTML = activeMembers.join("") + expiredMembers.join("");
+}
+
+function renewMember(memberId, days = 30) {
+  const member = displayedMembers.find(m => m.id === memberId);
+  if (!member) return;
+
+  const now = new Date();
+  const newStart = now;
+  const newExpires = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+  const newStatus = "active";
+  const newPrice = member.type === "Regular" ? 600 : 500;
+
+  db.collection("members").doc(memberId).update({
+    startDate: firebase.firestore.Timestamp.fromDate(newStart),
+    expiresAt: firebase.firestore.Timestamp.fromDate(newExpires),
+    price: newPrice,
+    status: newStatus
+  })
+  .then(() => {
+    closeRenewModal();
+    loadMemberData(); // reload members
+  })
+  .catch(err => {
+    alert("❌ Failed to renew member: " + err.message);
+  });
+}
+
+
+let renewTargetId = null;
+
+function openRenewModal(memberId) {
+  renewTargetId = memberId;
+  document.getElementById("renewModal").classList.remove("hidden");
+}
+
+function closeRenewModal() {
+  document.getElementById("renewModal").classList.add("hidden");
+  renewTargetId = null;
+}
+
+function confirmRenew() {
+  const periodDays = parseInt(document.getElementById("renewPeriod").value) || 30;
+  if (renewTargetId) {
+    renewMember(renewTargetId, periodDays); // pass days to renewMember
+    closeRenewModal();
+  }
 }
 
 function filterMembers() {
@@ -226,27 +345,35 @@ function saveEdit() {
       message.textContent = "❌ " + err.message;
     });
 }
+function showErrorModal(message) {
+  document.getElementById("errorModalMessage").textContent = message;
+  document.getElementById("errorModal").classList.remove("hidden");
+}
 
+function closeErrorModal() {
+  document.getElementById("errorModal").classList.add("hidden");
+}
 
 // Auto-login handling
-auth.onAuthStateChanged(user => {
-  if (user && user.uid === ADMIN_UID) {
-    showDashboard();
-  }
-});
+//auth.onAuthStateChanged(user => {
+// if (user && user.uid === ADMIN_UID) {
+//    showDashboard();
+//  }
+//});
 
 function showTab(tab) {
-  const tabs = ['members', 'add'];
+  const tabs = ['members', 'add', 'admin'];
   tabs.forEach(t => {
     document.getElementById(`tab-${t}`).classList.add('hidden');
   });
   document.getElementById(`tab-${tab}`).classList.remove('hidden');
 
-  // Highlight active tab button (horizontal)
+  // Highlight active tab button
   document.querySelectorAll('.tab-item').forEach(btn => btn.classList.remove('active'));
   const activeBtn = Array.from(document.querySelectorAll('.tab-item')).find(btn => btn.textContent.toLowerCase().includes(tab));
   if (activeBtn) activeBtn.classList.add('active');
 }
+
 
 // Format local datetime string for datetime-local input
 function toLocalDatetimeString(date) {
@@ -310,3 +437,39 @@ function addMember() {
       message.textContent = "❌ Failed to add member: " + err.message;
     });
 }
+
+function addAdmin() {
+  const emailInput = document.getElementById("adminEmail");
+  const passwordInput = document.getElementById("adminPassword");
+  const message = document.getElementById("adminMessage");
+
+  const email = emailInput.value.trim().toLowerCase();
+  const password = passwordInput.value.trim();
+
+  if (!email || !email.includes("@")) {
+    message.textContent = "❗ Please enter a valid email address.";
+    return;
+  }
+
+  if (!password || password.length < 6) {
+    message.textContent = "❗ Password must be at least 6 characters.";
+    return;
+  }
+
+  // First, create the actual user in Firebase Auth
+  auth.createUserWithEmailAndPassword(email, password)
+  .then((userCredential) => {
+    const uid = userCredential.user.uid;
+    // Use UID as the document ID in Firestore
+    return db.collection("admins").doc(uid).set({ email });
+  })
+  .then(() => {
+    message.textContent = "✅ Admin created and saved successfully!";
+    emailInput.value = "";
+    passwordInput.value = "";
+  })
+  .catch((err) => {
+    message.textContent = "❌ Failed to add admin: " + err.message;
+  });
+}
+

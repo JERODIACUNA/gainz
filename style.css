@@ -5,6 +5,8 @@
 body {
   font-family: Arial, sans-serif;
    background: linear-gradient(to bottom, #ffffff 0%, #6f6f6f 15%, #000000 30%);
+    background-attachment: fixed; /* Fixes the gradient */
+  background-repeat: no-repeat;
   margin: 0;
   min-height: 100vh;
   display: flex;
@@ -25,11 +27,13 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.3);
   width: 100%;
   max-width: 1200px;
-  min-height: 130vh;
+
   margin: 1rem auto 0 auto;
   display: flex;
   flex-direction: column;
 }
+
+
 
 #login-container {
   max-width: 400px;
@@ -46,7 +50,7 @@ body {
 
 
 /* Inputs and buttons */
-input, select, button {
+input, select {
   display: block;
   width: 100%;
   padding: 0.75rem;
@@ -55,6 +59,29 @@ input, select, button {
   border: 1px solid #ccc;
   font-size: 1rem;
 }
+.login-btn {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  background-color: #444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  margin-top: 1rem;
+}
+
+.login-btn:hover {
+  background-color: #555;
+  transform: scale(1.02);
+}
+
+.login-btn:active {
+  transform: scale(0.98);
+}
+
+
 button {
    background: rgba(255, 255, 255, 0.05); /* semi-transparent white */
   backdrop-filter: blur(4px);
@@ -82,14 +109,6 @@ button::before{
   left: -0%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(
-    0deg,
-    transparent,
-    transparent 30%,
-    rgba(0, 255, 255, 0.3)
-  );
-  transform: rotate(-45deg);
-  transition: all 0.8s ease;
   opacity: 0;
   z-index: 1;
 }
@@ -109,24 +128,7 @@ button::before{
    margin-top: 20px;
   z-index: 0;
 }
-.edit-btn::before{
-      content: '';
-  position: absolute;
-  top: -100%;
-  left: -0%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    0deg,
-    transparent,
-    transparent 30%,
-    rgba(0, 255, 255, 0.841)
-  );
-  transform: rotate(-45deg);
-  transition: all 0.8s ease;
-  opacity: 0;
-  z-index: 1;
-}
+
 
 .edit-btn:hover {
   background: #222222;
@@ -155,13 +157,18 @@ button::before{
   transform: scale(1.02);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
-
+.delete-btn,.edit-btn {
+  width: 100%;
+}
 .hidden {
   display: none;
 }
 
 /* Member list */
 #member-list {
+    display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
   max-height: 87vh;
   overflow-y: auto;
   overflow-x: hidden;
@@ -190,41 +197,85 @@ button::before{
   display: flex;
 }
 
-  .member-card {
-    display: flex;
-    align-items: flex-start;
-    background: #fff;
-    border-radius: 10px;
-    padding: 10px;
-    margin: 10.5px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  }
-
-  .member-image {
-    flex: 1 0 60px;
-    height: 60px;
-    margin-right: 15px;
-  }
-
-  .member-image img {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ccc;
-  }
-
-  .member-details {
-    flex: 1;
-  }
-
-.member-details button {
-  margin-top: 5px;
-  padding: 4px 8px;
-  border-radius: 5px;
-  cursor: pointer;
+.member-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffffcc;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(4px);
+  transition: transform 0.2s ease;
 }
 
+
+.member-card:hover {
+  transform: scale(1.01);
+}
+
+.member-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 0 0 60px;
+  margin-right: 12px;
+}
+
+.member-image img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ccc;
+}
+
+
+.member-details {
+  flex: 1;
+  font-size: 0.85rem;
+}
+
+.member-details button {
+  margin-top: 6px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  width: 100%;
+  border-radius: 6px;
+}
+
+/* Smaller delete button under image */
+.member-image .delete-btn {
+  margin-top: 8px;
+  padding: 6px;
+  font-size: 0.75rem;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  display: block;
+  width: 48px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.member-image .delete-btn:hover {
+  background: #c82333;
+  transform: scale(1.05);
+}
+
+
+/* Renew button under edit */
+.renew-btn {
+  margin-top: 5px;
+  padding: 4px 8px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
 
 
 
@@ -244,7 +295,7 @@ button::before{
   align-items: center;
   width: 100%;
   position: relative;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   border-radius: 6px;
   justify-content: flex-start;
 }
@@ -253,12 +304,14 @@ button::before{
   align-items: center;
   gap: 8px;
   padding: 12px 18px;
-  border-radius: 6px;
+  border-radius: 7px;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
   color: #222;
   font-weight: 500;
   font-size: 1rem;
+  align-items: center;
+  flex-direction: column;
 }
 .clean-tab-menu .tab-item.active{
   background: rgba(61, 61, 61, 0.8);
@@ -290,9 +343,64 @@ button::before{
 .tab-content.hidden {
   display: none;
 }
+  /* Modal Styling */
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+.modal-content h3 {
+  margin-top: 0;
+}
+
+.modal-content button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #d9534f;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.modal-content button:hover {
+  background-color: #c9302c;
+}
+.modal-content input {
+  width: 60%;
+  padding: 8px;
+  margin: 10px 0;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
 
 /* Responsive styles for mobile */
-@media (max-width: 480px) {
+@media (max-width: 540px) {
   body {
     padding: 1rem;
   }
@@ -305,7 +413,7 @@ button::before{
   }
 
   .clean-tab-menu .tab-item {
-    padding: 6px 2px;
+    padding: 6px 12px;
     font-size: 0.75rem;
     gap: 4px;
     flex-direction: column;
@@ -320,11 +428,14 @@ button::before{
     font-size: 1rem;
     margin-bottom: 0.5rem;
   }
-
+#newName{
+  margin-bottom: 10px !important;
+}
   input, select, button {
     font-size: 0.8rem !important;
-    padding: 5px !important;
+    padding: 13px !important;
     margin-bottom: 10px !important;
+    margin-top: 5px !important;
   }
 
   button, .edit-btn, .delete-btn {
@@ -349,7 +460,7 @@ button::before{
 
   .member-details {
     text-align: center;
-    font-size: 0.85rem;
+   
   }
 
   .member-details button {
@@ -370,6 +481,32 @@ button::before{
     font-size: 0.9rem;
     padding: 6px;
   }
+
+
+  .member-details .button-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.member-details .edit-btn,
+.member-details .renew-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 6px 12px;
+  margin-top: 0 !important;
+}
+
+.member-details .delete-btn {
+  display: block;
+  margin: 10px auto 0 auto;
+  min-width: 100px;
+}
+
+
+
 }
 
 

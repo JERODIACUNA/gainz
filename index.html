@@ -14,31 +14,60 @@
     <h2>Admin Login</h2>
     <input type="email" id="email" placeholder="Email" required>
     <input type="password" id="password" placeholder="Password" required>
-    <button onclick="login()">Login</button>
+    
+    <button class="login-btn" onclick="login()">Login</button>
+    <p style="text-align: right;margin-left: 50%; margin-top: 10px; color: #ccc;
+text-decoration: underline;">
+  <a href="#" onclick="resetPassword()" style="color: #ffffff; font-size: 0.9rem;">Forgot Password?</a>
+</p>
     <p id="error-message"></p>
   </div>
 
   <div class="container hidden" id="dashboard-container">
     <h2>Welcome, Admin</h2>
-    <nav class="tab-navbar-horizontal clean-navbar">
-      <ul class="tab-menu clean-tab-menu">
-        <li class="tab-item" onclick="showTab('members')">
-          <i data-feather="users"></i>
-          <span>Members</span>
-        </li>
-        <li class="tab-item" onclick="showTab('add')">
-          <i data-feather="folder-plus"></i>
-          <span>Add Member</span>
-        </li>
-        <li class="tab-item logout-tab" onclick="logout()">
-          <i data-feather="log-out"></i>
-        </li>
-      </ul>
-    </nav>
+<nav class="tab-navbar-horizontal clean-navbar">
+  <ul class="tab-menu clean-tab-menu">
+    <li class="tab-item active" onclick="showTab('members')">
+      <i data-feather="users"></i>
+      <span>Members</span>
+    </li>
+    <li class="tab-item" onclick="showTab('add')">
+      <i data-feather="folder-plus"></i>
+      <span>Add Member</span>
+    </li>
+    <li class="tab-item" onclick="showTab('admin')">
+      <i data-feather="user-plus"></i>
+      <span>Add Admin</span>
+    </li>
+    <li class="tab-item logout-tab" onclick="logout()">
+      <i data-feather="log-out"></i>
+    </li>
+  </ul>
+</nav>
+
+
 
     <div id="tab-members" class="tab-content">
       <h3>All Members</h3>
-      <input type="text" id="searchInput" placeholder="🔍 Search members..." oninput="filterMembers()" style="width: 100%; padding: 8px; margin-bottom: 10px; font-size: 1rem;">
+      <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; align-items: center; flex-wrap: nowrap;">
+  <input type="text" id="searchInput" placeholder="🔍 Search members..." oninput="filterMembers()" 
+         style="flex: 1; min-width: 40%; padding: 8px; font-size: 1rem;">
+
+  <select id="typeFilter" onchange="filterMembers()" style="padding: 8px; font-size: 0.85rem; min-width: 25%;">
+  <option value="">All Types</option>
+  <option value="Regular">Regular</option>
+  <option value="Student">Student</option>
+</select>
+
+<select id="statusFilter" onchange="filterMembers()" style="padding: 8px; font-size: 0.85rem; min-width: 25%;">
+  <option value="">All Status</option>
+  <option value="active">Active</option>
+  <option value="expired">Expired</option>
+</select>
+
+  
+</div>
+
       <div id="member-list"></div>
     </div>
 
@@ -57,7 +86,18 @@
       <button onclick="addMember()">Add Member</button>
       <p id="addMessage"></p>
     </div>
+
+    <div id="tab-admin" class="tab-content hidden">
+  <h2>Add New Admin</h2>
+  <div>
+    <input type="email" id="adminEmail" placeholder="Enter admin email" />
+    <input type="password" id="adminPassword" placeholder="Enter password" />
+    <button onclick="addAdmin()">➕ Add Admin</button>
+    <p id="adminMessage"></p>
   </div>
+</div>
+  </div>
+
 
   <div id="editModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#00000099; justify-content:center; align-items:center; z-index:999;">
     <div style="background:white; padding:20px; border-radius:8px; width:300px;">
@@ -78,6 +118,29 @@
       <p id="editMessage" style="color:red; font-size:0.9rem;"></p>
     </div>
   </div>
+<!-- Renewal Confirmation Modal -->
+<div id="renewModal" class="modal hidden">
+  <div class="modal-content">
+    <h3>Renew Membership</h3>
+    <p>Are you sure you want to renew this membership?</p>
+
+    <label for="renewPeriod">Renewal Period (in days):</label>
+    <input type="number" id="renewPeriod" value="30" min="1" max="365" />
+
+    <div class="modal-buttons">
+      <button onclick="confirmRenew()">✅ Confirm</button>
+      <button onclick="closeRenewModal()">❌ Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="errorModal" class="modal hidden">
+  <div class="modal-content">
+    <h3>⚠️ Login Error</h3>
+    <p id="errorModalMessage"></p>
+    <button onclick="closeErrorModal()">OK</button>
+  </div>
+</div>
 
   <script src="script.js"></script>
   <script src="https://unpkg.com/feather-icons"></script>
