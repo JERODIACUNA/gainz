@@ -4,7 +4,7 @@
 }
 body {
   font-family: Arial, sans-serif;
-   background: linear-gradient(to bottom, #ffffff 0%, #6f6f6f 15%, #000000 30%);
+   background: linear-gradient(to bottom, #ffffff 0%, #6f6f6f 30%, #000000 60%);
     background-attachment: fixed; /* Fixes the gradient */
   background-repeat: no-repeat;
   margin: 0;
