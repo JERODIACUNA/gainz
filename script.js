@@ -16,6 +16,27 @@ const db = firebase.firestore();
 // Your admin UID (replace this with actual one)
 //const ADMIN_UID = "XVoI7gzRTwNHfSMoTeDYwWuvE9Q2";
 
+//auto-login
+auth.onAuthStateChanged(user => {
+  if (user) {
+    const email = user.email.toLowerCase();
+
+    db.collection("admins")
+      .where("email", "==", email)
+      .get()
+      .then(snapshot => {
+        if (!snapshot.empty) {
+          showDashboard(); // ✅ Logged in + admin verified
+        } else {
+          auth.signOut(); // 🚫 Not an admin, force logout
+        }
+      })
+      .catch(error => {
+        console.error("Auto-login check failed:", error.message);
+      });
+  }
+});
+
 // Format Firestore Timestamp to readable string
 function formatDateTime(date) {
   return date.toLocaleString('en-PH', {
@@ -61,42 +82,58 @@ if (error.code === "auth/invalid-email") {
 showErrorModal(friendlyMessage);
     });
 }
+function showErrorModal(message) {
+  document.getElementById("errorModalMessage").textContent = message;
+  document.getElementById("errorModal").classList.remove("hidden");
+}
+
+function closeErrorModal() {
+  document.getElementById("errorModal").classList.add("hidden");
+}
+
 function resetPassword() {
   const email = document.getElementById("email").value.trim();
 
   if (!email) {
-    showErrorModal("⚠️ Please enter your email address.");
+    showResetPasswordModal("⚠️ Please enter your email address.");
     return;
   }
 
-  // Only allow reset if the email matches the admin account
   db.collection("admins")
-  .where("email", "==", email)
-  .get()
-  .then(snapshot => {
-    if (!snapshot.empty) {
-      return auth.sendPasswordResetEmail(email);
-    } else {
-      throw new Error("unauthorized");
-    }
-  })
-  .then(() => {
-    showErrorModal("✅ A password reset link has been sent to your admin email.");
-  })
-  .catch((error) => {
-    let message = "An error occurred. Please try again.";
-    if (error.message === "unauthorized") {
-      message = "❌ This email is not authorized for admin access.";
-    } else if (error.code === "auth/invalid-email") {
-      message = "Please enter a valid email address.";
-    } else if (error.code === "auth/user-not-found") {
-      message = "No admin account found with this email.";
-    }
-    showErrorModal(message);
-    console.error(error);
-  });
+    .where("email", "==", email)
+    .get()
+    .then(snapshot => {
+      if (!snapshot.empty) {
+        return auth.sendPasswordResetEmail(email);
+      } else {
+        throw new Error("unauthorized");
+      }
+    })
+    .then(() => {
+      showResetPasswordModal("✅ A password reset link has been sent to your admin email.");
+    })
+    .catch((error) => {
+      let message = "An error occurred. Please try again.";
+      if (error.message === "unauthorized") {
+        message = "❌ This email is not authorized for admin access.";
+      } else if (error.code === "auth/invalid-email") {
+        message = "Please enter a valid email address.";
+      } else if (error.code === "auth/user-not-found") {
+        message = "No admin account found with this email.";
+      }
+      showResetPasswordModal(message);
+      console.error(error);
+    });
 }
 
+function showResetPasswordModal(message) {
+  document.getElementById("resetPasswordMessage").textContent = message;
+  document.getElementById("resetPasswordModal").classList.remove("hidden");
+}
+
+function closeResetPasswordModal() {
+  document.getElementById("resetPasswordModal").classList.add("hidden");
+}
 
 
 
@@ -148,7 +185,7 @@ tempMembers.push({
   expires: data.expiresAt.toDate(),
   daysLeft,
   isExpired,
-  photoURL: data.photoURL || "default.jpg" // optional fallback
+  photoURL: data.photoURL || "assets/default.jpg" // optional fallback
 });
 
     });
@@ -191,9 +228,10 @@ function renderFilteredMembers() {
 
 const card = `
   <div class="member-card">
-    <div class="member-image">
-      <img src="${member.photoURL}" alt="${member.name}" />
-    </div>
+    <div class="member-image"  onclick="triggerImageUpload('${member.id}')" style="display: block; cursor: pointer;">
+  <img src="${member.photoURL}" alt="${member.name}" />
+  </div>
+ 
     <div class="member-details">
       <strong>${member.name}</strong><br>
       Type: ${member.type}<br>
@@ -208,21 +246,76 @@ const card = `
         </button>
       <button class="renew-btn" onclick="openRenewModal('${member.id}')">🔄 Renew</button>
       </div>
-
-      <button class="delete-btn" onclick="deleteMember('${member.id}')">
-        🗑️ Delete
-      </button>
     </div>
   </div>
 `;
-
-
-
-    (member.isExpired ? expiredMembers : activeMembers).push(card);
+  (member.isExpired ? expiredMembers : activeMembers).push(card);
   });
 
   list.innerHTML = activeMembers.join("") + expiredMembers.join("");
 }
+
+
+// Global reference to track which member's photo we're uploading
+let selectedMemberId = null;
+
+// Trigger hidden input when clicking the image icon
+function triggerImageUpload(memberId) {
+  selectedMemberId = memberId;
+  document.getElementById('memberImageInput').click();
+}
+
+// Handle image selection and upload
+document.getElementById('memberImageInput').addEventListener('change', async function () {
+  const file = this.files[0];
+  if (!file || !selectedMemberId) return;
+
+  try {
+    const imageUrl = await uploadImageToCloudinary(file);
+
+    await db.collection("members").doc(selectedMemberId).update({
+      photoURL: imageUrl
+    });
+
+    showImageUploadModal("✅ Profile picture updated!");
+    loadMemberData(); // Refresh UI
+  } catch (error) {
+    showImageUploadModal("❌ Failed to upload image: " + error.message);
+  }
+
+  // Reset for next upload
+  this.value = "";
+  selectedMemberId = null;
+});
+
+
+function showImageUploadModal(message) {
+  document.getElementById("imageUploadMessage").textContent = message;
+  document.getElementById("imageUploadModal").classList.remove("hidden");
+}
+
+function closeImageUploadModal() {
+  document.getElementById("imageUploadModal").classList.add("hidden");
+}
+
+
+async function uploadImageToCloudinary(file) {
+  const url = `https://api.cloudinary.com/v1_1/dtafradfb/image/upload`;
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "members_photos");
+
+  const response = await fetch(url, {
+    method: "POST",
+    body: formData
+  });
+
+  if (!response.ok) throw new Error("Image upload failed");
+
+  const data = await response.json();
+  return data.secure_url;
+}
+
 
 function renewMember(memberId, days = 30) {
   const member = displayedMembers.find(m => m.id === memberId);
@@ -286,14 +379,34 @@ function deleteMember(id) {
       .catch(err => alert("Failed to delete: " + err.message));
   }
 }
-function editMember(id) {
-  alert("Edit functionality coming soon for member ID: " + id);
+
+function confirmDeleteMember() {
+  if (!editingMemberId) return;
+  document.getElementById("deleteModal").classList.remove("hidden");
+}
+function deleteConfirmed() {
+  db.collection("members").doc(editingMemberId).delete()
+    .then(() => {
+      closeEditModal();
+      closeDeleteModal();
+      showErrorModal("✅ Member deleted successfully.");
+      loadMemberData();
+    })
+    .catch(err => {
+      closeDeleteModal();
+      showErrorModal("❌ Failed to delete member: " + err.message);
+    });
+}
+
+function closeDeleteModal() {
+  document.getElementById("deleteModal").classList.add("hidden");
 }
 
 //edit member
 let editingId = null;
-
+let editingMemberId = null;
 function editMember(id) {
+    editingMemberId = id;
   db.collection("members").doc(id).get().then(doc => {
     if (!doc.exists) return alert("Member not found.");
 
@@ -345,14 +458,7 @@ function saveEdit() {
       message.textContent = "❌ " + err.message;
     });
 }
-function showErrorModal(message) {
-  document.getElementById("errorModalMessage").textContent = message;
-  document.getElementById("errorModal").classList.remove("hidden");
-}
 
-function closeErrorModal() {
-  document.getElementById("errorModal").classList.add("hidden");
-}
 
 // Auto-login handling
 //auth.onAuthStateChanged(user => {
