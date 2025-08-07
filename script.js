@@ -241,10 +241,8 @@ const card = `
       ${statusTag}<br>
 
       <div class="button-row">
-        <button class="edit-btn" onclick="editMember('${member.id}')">
-          ✏️ Edit
-        </button>
-      <button class="renew-btn" onclick="openRenewModal('${member.id}')">🔄 Renew</button>
+        <button class="edit-btn" onclick="editMember('${member.id}')">Edit</button>
+      <button class="renew-btn" onclick="openRenewModal('${member.id}')">Renew</button>
       </div>
     </div>
   </div>
@@ -277,7 +275,7 @@ document.getElementById('memberImageInput').addEventListener('change', async fun
       photoURL: imageUrl
     });
 
-    showImageUploadModal("✅ Profile picture updated!");
+    showImageUploadModal("Profile picture updated!");
     loadMemberData(); // Refresh UI
   } catch (error) {
     showImageUploadModal("❌ Failed to upload image: " + error.message);
@@ -367,11 +365,37 @@ function filterMembers() {
   renderFilteredMembers();
 }
 
-
+function confirmDeleteMember() {
+  if (!editingMemberId) return;
+  document.getElementById("deleteModal").classList.remove("hidden");
+}
 // delete member
-function deleteMember(id) {
+async function deleteMember(id) {
   if (confirm("Are you sure you want to delete this member?")) {
-    db.collection("members").doc(id).delete()
+    const docRef = db.collection("members").doc(id);
+    const docSnap = await docRef.get();
+    if (docSnap.exists) {
+      const data = docSnap.data();
+      const photoURL = data.photoURL;
+      if (photoURL) {
+        // Extract public_id from the URL for Cloudinary deletion
+        const matches = photoURL.match(/\/upload\/(?:v\d+\/)?([^\.\/]+)\./);
+        if (matches) {
+          const publicId = matches[1];
+          try {
+            await fetch("https://us-central1-gainz-960eb.cloudfunctions.net/api/deleteImage", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ publicId })
+            });
+          } catch (err) {
+            console.error("Failed to delete image from Cloudinary:", err);
+          }
+        }
+      }
+    }
+    // Delete member from Firestore
+    docRef.delete()
       .then(() => {
         alert("Member deleted.");
         loadMemberData();
@@ -380,12 +404,32 @@ function deleteMember(id) {
   }
 }
 
-function confirmDeleteMember() {
+async function deleteConfirmed() {
   if (!editingMemberId) return;
-  document.getElementById("deleteModal").classList.remove("hidden");
-}
-function deleteConfirmed() {
-  db.collection("members").doc(editingMemberId).delete()
+  const docRef = db.collection("members").doc(editingMemberId);
+  const docSnap = await docRef.get();
+  if (docSnap.exists) {
+    const data = docSnap.data();
+    const photoURL = data.photoURL;
+    if (photoURL) {
+      // Extract public_id from the URL for Cloudinary deletion
+      const matches = photoURL.match(/\/upload\/(?:v\d+\/)?([^\.\/]+)\./);
+      if (matches) {
+        const publicId = matches[1];
+        try {
+          await fetch("https://us-central1-gainz-960eb.cloudfunctions.net/api/deleteImage", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ publicId })
+          });
+        } catch (err) {
+          console.error("Failed to delete image from Cloudinary:", err);
+        }
+      }
+    }
+  }
+  // Delete member from Firestore
+  docRef.delete()
     .then(() => {
       closeEditModal();
       closeDeleteModal();
@@ -457,6 +501,60 @@ function saveEdit() {
     .catch(err => {
       message.textContent = "❌ " + err.message;
     });
+}
+
+async function removeMemberImage() {
+  if (!editingMemberId) {
+    alert("No member selected.");
+    return;
+  }
+
+  const docRef = firebase.firestore().collection("members").doc(editingMemberId);
+  const docSnap = await docRef.get();
+
+  if (!docSnap.exists) {
+    alert("Member not found.");
+    return;
+  }
+
+  const data = docSnap.data();
+  const photoURL = data.photoURL;
+
+  if (!photoURL) {
+    alert("No image to remove.");
+    return;
+  }
+
+  // Extract public_id from the URL for Cloudinary deletion
+  const matches = photoURL.match(/\/upload\/(?:v\d+\/)?([^\.\/]+)\./);
+  if (!matches) {
+    alert("Invalid Cloudinary URL.");
+    return;
+  }
+
+  const publicId = matches[1];
+
+  try {
+    // 1. Call your Cloud Function or backend to delete image from Cloudinary
+    const response = await fetch(`https://us-central1-gainz-960eb.cloudfunctions.net/api/deleteImage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ publicId })  // send public_id
+    });
+
+    const result = await response.json();
+    if (!result.success) throw new Error("Cloudinary deletion failed");
+
+    // 2. Update Firestore to remove the photoURL field
+    await docRef.update({ photoURL: firebase.firestore.FieldValue.delete() });
+
+    alert("Image removed successfully.");
+    closeEditModal(); // Optional: close the modal if open
+    loadMemberData(); // Refresh the member list
+  } catch (error) {
+    console.error("Failed to remove image:", error);
+    alert("Failed to remove image. Check console.");
+  }
 }
 
 

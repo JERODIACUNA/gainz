@@ -4,7 +4,7 @@
 }
 body {
   font-family: Arial, sans-serif;
-   background: linear-gradient(to bottom, #ffffff 0%, #6f6f6f 30%, #000000 60%);
+   background: linear-gradient(to bottom, #ffffff 0%, #6f6f6f 15%, #000000 30%);
     background-attachment: fixed; /* Fixes the gradient */
   background-repeat: no-repeat;
   margin: 0;
@@ -16,11 +16,36 @@ body {
   
 }
 
+.logo-background {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.5; /* light watermark effect */
+  z-index: 0;
+  pointer-events: none;
+}
+
+.logo-background img {
+  width: 60vw;           /* responsive scaling */
+  max-width: 700px; 
+  min-width: 630px;     /* set your fixed max size here */
+  height: auto;
+}
+h2, h3, label, p{
+  color: #ffffff;
+
+}
+#renewModal p,
+#deleteModal p, #imageUploadModal p,#imageUploadModal h3, #editModal label{
+  color: #000 !important;
+}
 /* Container */
 .container {
   background: rgba(255, 255, 255, 0.15); /* semi-transparent white */
-  backdrop-filter: blur(10px); /* blur the background */
-  -webkit-backdrop-filter: blur(10px); /* for Safari */
+  backdrop-filter: blur(5px); /* blur the background */
+  -webkit-backdrop-filter: blur(5px); /* for Safari */
+   z-index: 1; /* put it above the logo */
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
@@ -39,11 +64,9 @@ body {
   max-width: 400px;
   width: 100%;
   padding: 2rem;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  margin-top: 5vh;
+  margin-top: 20vh;
   min-height: 50vh;
   align-items: center;
 }
@@ -59,6 +82,13 @@ input, select {
   border: 1px solid #ccc;
   font-size: 1rem;
 }
+.input-wrapper {
+  width: 100%;
+  max-width: 400px;   /* Adjust to your desired input width */
+  margin: 0 auto;     /* This centers the div horizontally */
+  
+}
+
 .login-btn {
   width: 100%;
   padding: 0.75rem;
@@ -159,7 +189,7 @@ button::before{
 .delete-btn {
   color: white;
    background-color: #ff1919;
-  padding: 6px 12px;
+  padding: 2px 6px;
   min-width: 80px;
   min-height: 40px;
   border: none;
@@ -173,7 +203,7 @@ button::before{
   transform: scale(1.02);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
-.delete-btn,.edit-btn {
+.edit-btn {
   width: 100%;
 }
 .hidden {
@@ -301,11 +331,30 @@ button::before{
   cursor: pointer;
   transition: all 0.3s ease;
 }
-.member-image .delete-btn:hover {
-  background: #c82333;
-  transform: scale(1.05);
+
+.small-btn {
+  padding: 2px 6px;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  min-width: 28px;
+  min-height: 28px;
+  margin-bottom: 10px;
 }
 
+.cancelEditBtn.small-btn {
+  background: #6c757d;
+  color: #fff;
+  border: none;
+  padding: 2px 8px;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  min-width: 28px;
+  min-height: 28px;
+  cursor: pointer;
+}
+.cancelEditBtn.small-btn:hover {
+  background: #495057;
+}
 
 /* Renew button under edit */
 .renew-btn {
@@ -473,7 +522,7 @@ button::before{
 }
   input, select, button {
     font-size: 0.8rem !important;
-    padding: 13px !important;
+    padding: 13px;
     margin-bottom: 10px !important;
     margin-top: 5px !important;
   }
@@ -481,7 +530,22 @@ button::before{
   button, .edit-btn, .delete-btn {
   min-height: 44px;
 }
+#editModal > div > div {
+    
+    align-items: flex-start;
+    gap: 8px;
+  }
+  #editModal h4 {
+    font-size: 1rem;
+    margin-bottom: 6px;
+  }
 
+  .delete-btn.small-btn {
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 1rem;
+    padding: 4px 8px !important;
+  }
 
   #searchInput {
     font-size: 0.85rem;
