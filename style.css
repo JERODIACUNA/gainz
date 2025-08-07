@@ -4,7 +4,7 @@
 }
 body {
   font-family: Arial, sans-serif;
-   background: linear-gradient(to bottom, #ffffff 0%, #6f6f6f 15%, #000000 30%);
+   background: linear-gradient(to bottom, #ababab 0%, #747474 15%, #383838 30%, #151515 45%, #000000 60%,#000000 75%, #000000 90%, #000000 100%);
     background-attachment: fixed; /* Fixes the gradient */
   background-repeat: no-repeat;
   margin: 0;
@@ -611,10 +611,45 @@ button::before{
   min-width: 100px;
 }
 
-
-
 }
+.admin-table-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+  }
 
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  #adminTable {
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+    background-color: transparent;
+  }
+
+  #adminTable th,
+  #adminTable td {
+    border: 1px solid white;
+    padding: 10px;
+    text-align: left;
+    word-wrap: break-word;
+  }
+
+  #adminTable th {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  @media (max-width: 600px) {
+    #adminTable th,
+    #adminTable td {
+      font-size: 14px;
+      padding: 8px;
+    }
+  }
 
 /* Remove legacy/double styles below this line */
 /* (All previous .navbar, .tab-navbar, .tab-btn, .tab-menu, etc. are now replaced by the above) */

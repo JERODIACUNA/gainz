@@ -75,8 +75,9 @@ text-decoration: underline;">
     </div>
 
     <div id="tab-add" class="tab-content hidden">
-      <h3>Add New Member</h3>
+      
       <div class="input-wrapper">
+        <h3>Add New Member</h3>
       <input type="text" id="newName" placeholder="Full Name" required />
       <select id="memberType" onchange="updateMembershipDetails()">
         <option value="Regular">Regular (₱600)</option>
@@ -86,21 +87,26 @@ text-decoration: underline;">
       <input type="datetime-local" id="startDate" />
       <label for="expiresAt">Expires At</label>
       <input type="datetime-local" id="expiresAt" />
-      </div>
       <p>Price: ₱<span id="priceDisplay">600</span></p>
       <button onclick="addMember()">Add Member</button>
       <p id="addMessage"></p>
+      </div>
+      
     </div>
 
-    <div id="tab-admin" class="tab-content hidden">
-  <h3>Add New Admin</h3>
-  <div>
+<div id="tab-admin" class="tab-content hidden">
+  
+  <div class="input-wrapper">
+    <h3>Add New Admin</h3>
     <input type="email" id="adminEmail" placeholder="Enter admin email" />
     <input type="password" id="adminPassword" placeholder="Enter password" />
     <button onclick="addAdmin()">Add Admin</button>
     <p id="adminMessage"></p>
   </div>
+  </div>
 </div>
+</div>
+
   </div>
 
 <div id="editModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#00000099; justify-content:center; align-items:center; z-index:999;">
@@ -185,8 +191,31 @@ text-decoration: underline;">
     </div>
   </div>
 </div>
+<!-- Delete Result Modal -->
+<div id="deleteResultModal" class="modal hidden">
+  <div class="modal-content">
+    <h4>Delete Member</h4>
+    <p id="deleteResultMessage"></p>
+    <button onclick="closeDeleteResultModal()">OK</button>
+  </div>
+</div>
 <!-- Hidden file input for uploading member images -->
 <input type="file" id="memberImageInput" accept="image/*" style="display:none" />
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    document.body.classList.add('bg-fade-in');
+  });
+  
+</script>
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    document.body.classList.add('bg-fade-in');
+    document.querySelectorAll('.container').forEach(function(el) {
+      el.classList.add('fade-in');
+    });
+  });
+</script>
+
 
   <script src="script.js"></script>
   <script src="https://unpkg.com/feather-icons"></script>

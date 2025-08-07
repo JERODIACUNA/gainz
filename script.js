@@ -433,15 +433,22 @@ async function deleteConfirmed() {
     .then(() => {
       closeEditModal();
       closeDeleteModal();
-      showErrorModal("✅ Member deleted successfully.");
+      showDeleteResultModal("✅ Member deleted successfully.");
       loadMemberData();
     })
     .catch(err => {
       closeDeleteModal();
-      showErrorModal("❌ Failed to delete member: " + err.message);
+      showDeleteResultModal("❌ Failed to delete member: " + err.message);
     });
 }
+function showDeleteResultModal(message) {
+  document.getElementById("deleteResultMessage").textContent = message;
+  document.getElementById("deleteResultModal").classList.remove("hidden");
+}
 
+function closeDeleteResultModal() {
+  document.getElementById("deleteResultModal").classList.add("hidden");
+}
 function closeDeleteModal() {
   document.getElementById("deleteModal").classList.add("hidden");
 }
