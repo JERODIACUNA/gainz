@@ -252,10 +252,6 @@ displayedMembers.forEach(member => {
   list.innerHTML = activeMembers.join("") + expiredMembers.join("");
 }
 
-document.getElementById("memberDetailsModal").classList.remove("hidden");
-// OR
-document.getElementById("memberDetailsModal").classList.add("hidden");
-
 function closeMemberDetailsModal() {
   document.getElementById('memberDetailsModal').style.display = 'none';
 }
