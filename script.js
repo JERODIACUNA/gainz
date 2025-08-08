@@ -709,17 +709,40 @@ function addMember() {
   };
 
   db.collection("members").add(doc)
-    .then(() => {
-      message.textContent = "✅ Member added successfully!";
-      document.getElementById("memberNumber").value = "";
-      document.getElementById("newName").value = "";
-      updateMembershipDetails();
-      showTab('members');
-      loadMemberData(); // refresh list
-    })
-    .catch(err => {
-      message.textContent = "❌ Failed to add member: " + err.message;
-    });
+   .then(() => {
+  message.textContent = "Member added successfully!";
+  message.classList.remove("hidden");
+  message.classList.add("fade-message");
+
+  setTimeout(() => {
+    message.classList.add("fade-out");
+  }, 3000); // start fading out after 3s
+
+  setTimeout(() => {
+    message.textContent = "";
+    message.classList.remove("fade-message", "fade-out");
+  }, 4000); // completely clear after fade
+
+  document.getElementById("memberNumber").value = "";
+  document.getElementById("newName").value = "";
+  updateMembershipDetails();
+  showTab('members');
+  loadMemberData(); // refresh list
+})
+.catch(err => {
+  message.textContent = "❌ Failed to add member: " + err.message;
+  message.classList.remove("hidden");
+  message.classList.add("fade-message");
+
+  setTimeout(() => {
+    message.classList.add("fade-out");
+  }, 3000);
+
+  setTimeout(() => {
+    message.textContent = "";
+    message.classList.remove("fade-message", "fade-out");
+  }, 4000);
+});
 }
 
 
@@ -733,28 +756,49 @@ function addAdmin() {
 
   if (!email || !email.includes("@")) {
     message.textContent = "❗ Please enter a valid email address.";
+    fadeOutMessage(message);
     return;
   }
 
   if (!password || password.length < 6) {
     message.textContent = "❗ Password must be at least 6 characters.";
+    fadeOutMessage(message);
     return;
   }
 
-  // First, create the actual user in Firebase Auth
   auth.createUserWithEmailAndPassword(email, password)
-  .then((userCredential) => {
-    const uid = userCredential.user.uid;
-    // Use UID as the document ID in Firestore
-    return db.collection("admins").doc(uid).set({ email });
-  })
-  .then(() => {
-    message.textContent = "✅ Admin created and saved successfully!";
-    emailInput.value = "";
-    passwordInput.value = "";
-  })
-  .catch((err) => {
-    message.textContent = "❌ Failed to add admin: " + err.message;
-  });
+    .then((userCredential) => {
+      const uid = userCredential.user.uid;
+      return db.collection("admins").doc(uid).set({ email });
+    })
+    .then(() => {
+      message.textContent = "Admin created and saved successfully!";
+      emailInput.value = "";
+      passwordInput.value = "";
+      fadeOutMessage(message);
+    })
+    .catch((err) => {
+      message.textContent = "❌ Failed to add admin: " + err.message;
+      fadeOutMessage(message);
+    });
+}
+
+function fadeOutMessage(element) {
+  element.style.opacity = "1";
+  clearTimeout(element.fadeTimeout);
+
+  element.fadeTimeout = setTimeout(() => {
+    let opacity = 1;
+    const fade = setInterval(() => {
+      if (opacity <= 0) {
+        clearInterval(fade);
+        element.textContent = "";
+        element.style.opacity = "1"; // reset for future use
+      } else {
+        opacity -= 0.05;
+        element.style.opacity = opacity.toString();
+      }
+    }, 50);
+  }, 3000); // message stays for 3 seconds
 }
 

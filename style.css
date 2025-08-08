@@ -56,6 +56,14 @@ h2, h3, label, p{
   flex-direction: column;
 }
 
+.fade-message {
+  opacity: 1;
+  transition: opacity 1s ease;
+}
+
+.fade-out {
+  opacity: 0;
+}
 
 
 #login-container {
