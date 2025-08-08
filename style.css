@@ -36,8 +36,7 @@ h2, h3, label, p{
   color: #ffffff;
 
 }
-#renewModal p,
-#deleteModal p, #imageUploadModal p,#imageUploadModal h3, #editModal label{
+#renewModal p, #deleteModal p, #imageUploadModal p,#imageUploadModal h3, #editModal label, #memberDetailsModal p, #memberDetailsModal h2{
   color: #000 !important;
 }
 /* Container */
@@ -45,7 +44,7 @@ h2, h3, label, p{
   background: rgba(255, 255, 255, 0.15); /* semi-transparent white */
   backdrop-filter: blur(5px); /* blur the background */
   -webkit-backdrop-filter: blur(5px); /* for Safari */
-   z-index: 1; /* put it above the logo */
+   z-index: 0; /* put it above the logo */
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
@@ -118,7 +117,7 @@ button {
   -webkit-backdrop-filter: blur(6px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 15px;
-  color: #dddddd;
+  color: #ffffff;
   transition: all 0.4s ease;
   cursor: pointer;
   position: relative;
@@ -143,26 +142,6 @@ button::before{
   z-index: 1;
 }
 
-.edit-btn {
-   background: rgba(44, 44, 44, 0.9); /* semi-transparent white */
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  color: #ffffff;
-  transition: all 0.4s ease;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-   padding: 1rem;
-   margin-top: 20px;
-  z-index: 0;
-}
-.edit-btn:hover {
-  background: #222222;
-  transform: scale(1.02);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-}
 
 #saveEditBtn, #cancelEditBtn {
   color: white;
@@ -181,7 +160,7 @@ button::before{
 }
 
 #cancelEditBtn {
-  background-color: #6c757d;
+  background-color: #3d3d3d;;
 }
 
 
@@ -203,31 +182,34 @@ button::before{
   transform: scale(1.02);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
-.edit-btn {
-  width: 100%;
-}
+
 .hidden {
   display: none;
 }
 
 /* Member list */
 #member-list {
-    display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
-  max-height: 87vh;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  max-height: 60vh;
   overflow-y: auto;
   overflow-x: hidden;
   margin-top: 1rem;
   padding-right: 0rem;
-  
 
-  /* Hide scrollbar for Chrome, Safari, Opera */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none;  /* IE and Edge */
 }
 #member-list::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
+}
+
+/* 🟦 Force 2 columns on small/mobile screens */
+@media (max-width: 650px) {
+  #member-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 /*edit member*/
 #editModal {
@@ -237,7 +219,7 @@ button::before{
   background: #00000099;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  
 }
 #editModal:not(.hidden) {
   display: flex;
@@ -253,6 +235,7 @@ button::before{
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(4px);
   transition: transform 0.2s ease;
+  flex-direction: column;
 }
 
 
@@ -279,9 +262,6 @@ button::before{
   transition: transform 0.2s;
 }
 
-.member-image img:hover {
-  transform: scale(1.03); /* Slight hover effect */
-}
 
 .member-image span {
   position: absolute;
@@ -301,11 +281,26 @@ button::before{
   background: rgba(0, 0, 0, 0.8);
 }
 
-
+.modal-image {
+  display: block;
+  margin: 0 auto 1rem auto;
+  width: 200px;
+  height: 200px;
+  border-radius: 15%;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer; /* Make image clearly clickable */
+}
+.modal-image:hover {
+   transition: transform 0.2s ease;
+  transform: scale(1.02);
+  
+}
 
 .member-details {
   flex: 1;
   font-size: 0.85rem;
+  text-align: center
 }
 
 .member-details button {
@@ -356,15 +351,32 @@ button::before{
   background: #495057;
 }
 
-/* Renew button under edit */
-.renew-btn {
-  margin-top: 5px;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.member-details .button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
 }
+
+.edit-btn,
+.renew-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  background-color: #3498db;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+.edit-btn:hover,
+.renew-btn:hover {
+  background-color: #2c80b4;
+  transform: scale(1.03);
+}
+
 
 
 
@@ -440,12 +452,21 @@ button::before{
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
 }
 
 .modal.hidden {
   display: none;
 }
+#memberDetailsModal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 
 .modal-content {
   background: #fff;
@@ -455,6 +476,9 @@ button::before{
   width: 90%;
   max-width: 400px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  position: relative; /* For close button positioning */
+  margin: auto; /* Ensures it centers inside flexbox parent */
+  z-index: 2;
 }
 .modal-content h3 {
   margin-top: 0;
@@ -473,7 +497,7 @@ button::before{
 }
 
 .modal-content button:hover {
-  background-color: #c9302c;
+  background-color: #000000;
 }
 .modal-content input {
   width: 60%;
@@ -487,9 +511,19 @@ button::before{
   justify-content: center;
   gap: 10px;
 }
+#memberDetailsModal {
+  z-index: 0;
+}
 
+#editModal {
+  z-index: 0;
+}
+
+#renewModal {
+  z-index: 0;
+}
 /* Responsive styles for mobile */
-@media (max-width: 540px) {
+@media (max-width:670px) {
   body {
     padding: 1rem;
   }
@@ -521,13 +555,13 @@ button::before{
   margin-bottom: 10px !important;
 }
   input, select, button {
-    font-size: 0.8rem !important;
+    font-size: 0.7rem !important;
     padding: 13px;
     margin-bottom: 10px !important;
     margin-top: 5px !important;
   }
 
-  button, .edit-btn, .delete-btn {
+  button, .delete-btn {
   min-height: 44px;
 }
 #editModal > div > div {
@@ -555,19 +589,30 @@ button::before{
     flex-direction: column;
     align-items: center;
     padding: 8px;
+    gap: 8px;
   }
 
- .member-image {
-  margin: 0 auto 8px auto;
-  display: flex;
-  justify-content: center;
-}
+  .member-image {
+    width: 100px; /* Reduced from 150px */
+    height: 100px;
+    margin: 0 auto 8px auto;
+    display: flex;
+    justify-content: center;
+  }
+.member-image img {
+    border-radius: 15%;
+  }
 
+  .member-image span {
+    font-size: 12px;
+    padding: 4px;
+  }
 
   .member-details {
     text-align: center;
-   
+    font-size: 0.75rem; /* Smaller text for mobile */
   }
+
 
   .member-details button {
   min-width: 100px;
@@ -597,59 +642,44 @@ button::before{
   flex-wrap: wrap;
 }
 
-.member-details .edit-btn,
-.member-details .renew-btn {
-  flex: 1;
-  min-width: 100px;
-  padding: 6px 12px;
-  margin-top: 0 !important;
-}
-
 .member-details .delete-btn {
   display: block;
   margin: 10px auto 0 auto;
   min-width: 100px;
 }
 
+/* Member Modal for Mobile */
+#memberDetailsModal .modal-content {
+  width: 90%;
+  padding: 1rem;
+  font-size: 0.85rem;
 }
-.admin-table-container {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: auto;
-    margin-top: 20px;
-  }
 
-  .table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-  }
+#memberDetailsModal h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
 
-  #adminTable {
-    width: 100%;
-    border-collapse: collapse;
-    color: white;
-    background-color: transparent;
-  }
+#memberDetailsModal p {
+  margin: 6px 0;
+  font-size: 0.85rem;
+}
 
-  #adminTable th,
-  #adminTable td {
-    border: 1px solid white;
-    padding: 10px;
-    text-align: left;
-    word-wrap: break-word;
-  }
+#memberDetailsModal .button-group {
+  
+  justify-content: center;
+  gap: 10px;
 
-  #adminTable th {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
+  margin-top: 1rem;
+}
 
-  @media (max-width: 600px) {
-    #adminTable th,
-    #adminTable td {
-      font-size: 14px;
-      padding: 8px;
-    }
-  }
+#memberDetailsModal .button-group button {
+  flex: 1;
+  min-width: 100px;
+  font-size: 0.85rem;
+  padding: 10px;
+}
+}
 
 /* Remove legacy/double styles below this line */
 /* (All previous .navbar, .tab-navbar, .tab-btn, .tab-menu, etc. are now replaced by the above) */

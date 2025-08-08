@@ -151,6 +151,7 @@ function showDashboard() {
   loadMemberData();
 }
 
+
 function loadMemberData() {
   const list = document.getElementById("member-list");
   list.innerHTML = "<p>Loading members...</p>";
@@ -179,6 +180,7 @@ function loadMemberData() {
 tempMembers.push({
   id,
   name: data.name,
+  memberNumber: data.memberNumber || "", // ✅ Add this line
   type: data.type,
   price: data.price,
   start: data.startDate.toDate(),
@@ -211,48 +213,52 @@ function renderFilteredMembers() {
   const activeMembers = [];
   const expiredMembers = [];
 
-  displayedMembers.forEach(member => {
-    // Apply search filter
-    if (!member.name.toLowerCase().includes(search)) return;
+displayedMembers.forEach(member => {
+  const nameMatch = member.name.toLowerCase().includes(search);
+  const numberMatch = member.memberNumber.toString().includes(search);
+  
+  // Apply search filter to both name and memberNumber
+  if (!nameMatch && !numberMatch) return;
 
-    // Apply type filter
-    if (typeFilter && member.type !== typeFilter) return;
+  // Apply type filter
+  if (typeFilter && member.type !== typeFilter) return;
 
-    // Apply status filter
-    const status = member.isExpired ? "expired" : "active";
-    if (statusFilter && status !== statusFilter) return;
+  // Apply status filter
+  const status = member.isExpired ? "expired" : "active";
+  if (statusFilter && status !== statusFilter) return;
 
-    const statusTag = member.isExpired
-      ? `<span style="background: #f8d7da; color: #721c24; padding: 2px 6px; border-radius: 4px;">🛑 Expired</span>`
-      : `<span style="background: #d4edda; color: #155724; padding: 2px 6px; border-radius: 4px;">⏳ ${member.daysLeft} day${member.daysLeft !== 1 ? "s" : ""} left</span>`;
+  const statusTag = member.isExpired
+    ? `<span style="background: #f8d7da; color: #721c24; padding: 2px 6px; border-radius: 4px;">🛑 Expired</span>`
+    : `<span style="background: #d4edda; color: #155724; padding: 2px 6px; border-radius: 4px;">⏳ ${member.daysLeft} day${member.daysLeft !== 1 ? "s" : ""} left</span>`;
 
-const card = `
-  <div class="member-card">
-    <div class="member-image"  onclick="triggerImageUpload('${member.id}')" style="display: block; cursor: pointer;">
-  <img src="${member.photoURL}" alt="${member.name}" />
-  </div>
- 
-    <div class="member-details">
-      <strong>${member.name}</strong><br>
-      Type: ${member.type}<br>
-      Price: ₱${member.price}<br>
-      Start: ${new Date(member.start).toLocaleString()}<br>
-      Expires: ${new Date(member.expires).toLocaleString()}<br>
-      ${statusTag}<br>
+  const card = `
+    <div class="member-card" onclick="openMemberDetailsModal('${member.id}')" style="cursor: pointer;">
+      <div class="member-image" style="display: block; cursor: pointer;">
+        <img src="${member.photoURL}" alt="${member.name}" />
+      </div>
+      <div class="member-details">
+        <div style="font-weight: bold;"># ${member.memberNumber}</div>
+<div>${member.name}</div>
 
-      <div class="button-row">
-        <button class="edit-btn" onclick="editMember('${member.id}')">Edit</button>
-      <button class="renew-btn" onclick="openRenewModal('${member.id}')">Renew</button>
+        ${statusTag}
       </div>
     </div>
-  </div>
-`;
+  `;
+
   (member.isExpired ? expiredMembers : activeMembers).push(card);
-  });
+});
+
 
   list.innerHTML = activeMembers.join("") + expiredMembers.join("");
 }
 
+document.getElementById("memberDetailsModal").classList.remove("hidden");
+// OR
+document.getElementById("memberDetailsModal").classList.add("hidden");
+
+function closeMemberDetailsModal() {
+  document.getElementById('memberDetailsModal').style.display = 'none';
+}
 
 // Global reference to track which member's photo we're uploading
 let selectedMemberId = null;
@@ -344,6 +350,7 @@ function renewMember(memberId, days = 30) {
 let renewTargetId = null;
 
 function openRenewModal(memberId) {
+  closeMemberDetailsModal();
   renewTargetId = memberId;
   document.getElementById("renewModal").classList.remove("hidden");
 }
@@ -457,6 +464,8 @@ function closeDeleteModal() {
 let editingId = null;
 let editingMemberId = null;
 function editMember(id) {
+  
+  closeMemberDetailsModal();
     editingMemberId = id;
   db.collection("members").doc(id).get().then(doc => {
     if (!doc.exists) return alert("Member not found.");
@@ -613,21 +622,21 @@ function updateMembershipDetails() {
 window.addEventListener("load", updateMembershipDetails);
 
 function addMember() {
+  const memberNumber = document.getElementById("memberNumber").value.trim();
   const name = document.getElementById("newName").value.trim();
   const type = document.getElementById("memberType").value;
   const price = type === "Regular" ? 600 : 500;
-
   const startDate = new Date(document.getElementById("startDate").value);
   const expiresAt = new Date(document.getElementById("expiresAt").value);
-
   const message = document.getElementById("addMessage");
 
-  if (!name || isNaN(startDate) || isNaN(expiresAt)) {
+  if (!memberNumber || !name || isNaN(startDate) || isNaN(expiresAt)) {
     message.textContent = "❗ Please fill in all fields correctly.";
     return;
   }
 
   const doc = {
+    memberNumber: memberNumber,
     name: name,
     type: type,
     price: price,
@@ -639,6 +648,7 @@ function addMember() {
   db.collection("members").add(doc)
     .then(() => {
       message.textContent = "✅ Member added successfully!";
+      document.getElementById("memberNumber").value = "";
       document.getElementById("newName").value = "";
       updateMembershipDetails();
       showTab('members');
@@ -648,6 +658,7 @@ function addMember() {
       message.textContent = "❌ Failed to add member: " + err.message;
     });
 }
+
 
 function addAdmin() {
   const emailInput = document.getElementById("adminEmail");

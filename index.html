@@ -52,25 +52,22 @@ text-decoration: underline;">
 
     <div id="tab-members" class="tab-content">
       <h3>All Members</h3>
-      <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; align-items: center; flex-wrap: nowrap;">
+      <div style="display: flex; gap: 6px; margin-bottom: 10px; align-items: center; flex-wrap: nowrap;">
   <input type="text" id="searchInput" placeholder="🔍 Search " oninput="filterMembers()" 
          style="flex: 1; min-width: 40%; padding: 8px; font-size: 1rem;">
 
-  <select id="typeFilter" onchange="filterMembers()" style="padding: 8px; font-size: 0.85rem; min-width: 25%;">
+  <select id="typeFilter" onchange="filterMembers()" style="flex: 1;padding: 8px; font-size: 0.85rem; min-width: 25%;">
   <option value="">All Types</option>
   <option value="Regular">Regular</option>
   <option value="Student">Student</option>
 </select>
 
-<select id="statusFilter" onchange="filterMembers()" style="padding: 8px; font-size: 0.85rem; min-width: 25%;">
+<select id="statusFilter" onchange="filterMembers()" style="flex: 1;padding: 8px; font-size: 0.85rem; min-width: 25%;">
   <option value="">All Status</option>
   <option value="active">Active</option>
   <option value="expired">Expired</option>
-</select>
-
-  
+</select>  
 </div>
-
       <div id="member-list"></div>
     </div>
 
@@ -78,6 +75,7 @@ text-decoration: underline;">
       
       <div class="input-wrapper">
         <h3>Add New Member</h3>
+      <input type="text" id="memberNumber" placeholder="Member Number" required />
       <input type="text" id="newName" placeholder="Full Name" required />
       <select id="memberType" onchange="updateMembershipDetails()">
         <option value="Regular">Regular (₱600)</option>
@@ -109,7 +107,7 @@ text-decoration: underline;">
 
   </div>
 
-<div id="editModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#00000099; justify-content:center; align-items:center; z-index:999;">
+<div id="editModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#00000099; justify-content:center; align-items:center;">
   <div style="background:white; padding:20px; border-radius:8px; width:300px;">
     <div style="display: flex; justify-content: space-between;align-items: baseline;">
       <h4 style="margin: 0;">Edit Member</h4>
@@ -156,7 +154,7 @@ text-decoration: underline;">
     </div>
   </div>
 </div>
-<!-- Error Lgoin Modal -->
+<!-- Error Login Modal -->
 <div id="errorModal" class="modal hidden">
   <div class="modal-content">
     <h4>Login Error</h4>
@@ -199,23 +197,82 @@ text-decoration: underline;">
     <button onclick="closeDeleteResultModal()">OK</button>
   </div>
 </div>
+<!-- member Modal -->
+<div id="memberDetailsModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-img" id="modalImageContainer" style="display: block; cursor: pointer;">
+      <img id="modalImage" src="" alt="Member Image" class="modal-image" />
+    </div>
+
+    <!-- New Member Number element -->
+    <div id="modalNumber" style="font-weight: bold; font-size: 18px; margin-top: 10px;"></div>
+    <h2 id="modalName"></h2>
+
+    <p><strong>Type:</strong> <span id="modalType"></span></p>
+    <p><strong>Price:</strong> ₱<span id="modalPrice"></span></p>
+    <p><strong>Start:</strong> <span id="modalStart"></span></p>
+    <p><strong>Expires:</strong> <span id="modalExpires"></span></p>
+    <div class="button-group">
+      <button class="edit-btn" id="modalEditBtn">Edit</button>
+      <button class="renew-btn" id="modalRenewBtn">Renew</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+
 <!-- Hidden file input for uploading member images -->
 <input type="file" id="memberImageInput" accept="image/*" style="display:none" />
 <script>
   window.addEventListener('DOMContentLoaded', function() {
-    document.body.classList.add('bg-fade-in');
-  });
-  
-</script>
-<script>
-  window.addEventListener('DOMContentLoaded', function() {
+    // Prevent modal from showing on initial load
+    const modal = document.getElementById('memberDetailsModal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+
+    // Your existing fade-in animations
     document.body.classList.add('bg-fade-in');
     document.querySelectorAll('.container').forEach(function(el) {
       el.classList.add('fade-in');
     });
   });
+  window.addEventListener('click', function(event) {
+  const modal = document.getElementById('memberDetailsModal');
+  if (event.target === modal) {
+    modal.style.display = 'none';
+  }
+});
 </script>
 
+<script>
+  function openMemberDetailsModal(memberId) {
+  const member = displayedMembers.find(m => m.id === memberId);
+
+
+  if (!member) return;
+  document.getElementById('modalImage').src = member.photoURL || 'assets/default.jpg';
+  document.getElementById("modalNumber").textContent = `# ${member.memberNumber}`;
+  document.getElementById('modalName').innerText = member.name;
+  document.getElementById('modalType').innerText = member.type;
+  document.getElementById('modalPrice').innerText = member.price;
+  document.getElementById('modalStart').innerText = new Date(member.start).toLocaleString();
+  document.getElementById('modalExpires').innerText = new Date(member.expires).toLocaleString();
+
+  document.getElementById('modalEditBtn').onclick = () => editMember(member.id);
+  document.getElementById('modalRenewBtn').onclick = () => openRenewModal(member.id);
+  // ✅ Dynamically set the image click to trigger upload
+  document.getElementById('modalImageContainer').onclick = (event) => {
+    event.stopPropagation();
+    triggerImageUpload(member.id);
+  };
+  document.getElementById('memberDetailsModal').style.display = 'flex';
+}
+// Make function accessible from HTML onclick
+window.openMemberDetailsModal = openMemberDetailsModal;
+</script>
 
   <script src="script.js"></script>
   <script src="https://unpkg.com/feather-icons"></script>
