@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
   <title>Admin Login - Gym System</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -106,13 +109,13 @@ text-decoration: underline;">
 </div>
 
   </div>
-
+<!-- Edit Modal -->
 <div id="editModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#00000099; justify-content:center; align-items:center;">
   <div style="background:white; padding:20px; border-radius:8px; width:300px;">
     <div style="display: flex; justify-content: space-between;align-items: baseline;">
       <h4 style="margin: 0;">Edit Member</h4>
       <div style="display: flex; gap: 12px; margin-bottom: 5%; ">
-        <button id="removeImageBtn" class="cancelEditBtn small-btn" onclick="removeMemberImage()" title="Remove Image">
+        <button id="removeImageBtn" class="cancelEditBtn small-btn" onclick="confirmRemoveMemberImage()" title="Remove Image">
           Remove Image
         </button>
         <button id="deleteMemberBtn" class="delete-btn small-btn" onclick="confirmDeleteMember()" title="Delete Member">
@@ -139,6 +142,7 @@ text-decoration: underline;">
     <p id="editMessage" style="color:red; font-size:0.9rem;"></p>
   </div>
 </div>
+
 <!-- Renewal Confirmation Modal -->
 <div id="renewModal" class="modal hidden">
   <div class="modal-content">
@@ -178,6 +182,18 @@ text-decoration: underline;">
     <button onclick="closeImageUploadModal()">OK</button>
   </div>
 </div>
+<!-- Confirm Remove Image Modal -->
+<div id="confirmRemoveImageModal" class="modal hidden">
+  <div class="modal-content">
+    <h2>Remove Profile Image?</h2>
+    <p>This action cannot be undone. Are you sure you want to remove this image?</p>
+    <div class="modal-actions">
+      <button id="confirmRemoveImageBtn" class="btn btn-danger">Remove</button>
+      <button id="cancelRemoveImageBtn" class="btn">Cancel</button>
+      
+    </div>
+  </div>
+</div>
 <!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="modal hidden">
   <div class="modal-content">
@@ -200,7 +216,7 @@ text-decoration: underline;">
 <!-- member Modal -->
 <div id="memberDetailsModal" class="modal hidden">
   <div class="modal-content">
-    <div class="modal-img" id="modalImageContainer" style="display: block; cursor: pointer;">
+    <div class="modal-img" id="modalImageContainer" style=" cursor: pointer;">
       <img id="modalImage" src="" alt="Member Image" class="modal-image" />
     </div>
 

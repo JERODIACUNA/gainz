@@ -556,7 +556,22 @@ function saveEdit() {
     });
 }
 
-async function removeMemberImage() {
+function confirmRemoveMemberImage() {
+  const modal = document.getElementById("confirmRemoveImageModal");
+  modal.classList.remove("hidden");
+
+  // Attach one-time listeners
+  document.getElementById("cancelRemoveImageBtn").onclick = () => {
+    modal.classList.add("hidden");
+  };
+
+  document.getElementById("confirmRemoveImageBtn").onclick = () => {
+    modal.classList.add("hidden");
+    actuallyRemoveMemberImage();
+  };
+}
+
+async function actuallyRemoveMemberImage() {
   if (!editingMemberId) {
     alert("No member selected.");
     return;
@@ -578,7 +593,6 @@ async function removeMemberImage() {
     return;
   }
 
-  // Extract public_id from the URL for Cloudinary deletion
   const matches = photoURL.match(/\/upload\/(?:v\d+\/)?([^\.\/]+)\./);
   if (!matches) {
     alert("Invalid Cloudinary URL.");
@@ -588,27 +602,26 @@ async function removeMemberImage() {
   const publicId = matches[1];
 
   try {
-    // 1. Call your Cloud Function or backend to delete image from Cloudinary
     const response = await fetch(`https://us-central1-gainz-960eb.cloudfunctions.net/api/deleteImage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ publicId })  // send public_id
+      body: JSON.stringify({ publicId })
     });
 
     const result = await response.json();
     if (!result.success) throw new Error("Cloudinary deletion failed");
 
-    // 2. Update Firestore to remove the photoURL field
     await docRef.update({ photoURL: firebase.firestore.FieldValue.delete() });
 
     alert("Image removed successfully.");
-    closeEditModal(); // Optional: close the modal if open
-    loadMemberData(); // Refresh the member list
+    closeEditModal();
+    loadMemberData();
   } catch (error) {
     console.error("Failed to remove image:", error);
     alert("Failed to remove image. Check console.");
   }
 }
+
 
 
 // Auto-login handling
@@ -627,8 +640,21 @@ function showTab(tab) {
 
   // Highlight active tab button
   document.querySelectorAll('.tab-item').forEach(btn => btn.classList.remove('active'));
-  const activeBtn = Array.from(document.querySelectorAll('.tab-item')).find(btn => btn.textContent.toLowerCase().includes(tab));
+const activeBtn = Array.from(document.querySelectorAll('.tab-item')).find(
+  btn => btn.textContent.toLowerCase().includes(tab.toLowerCase())
+);
+
   if (activeBtn) activeBtn.classList.add('active');
+}
+
+document.querySelectorAll('.tab-item').forEach(btn => {
+  btn.addEventListener('click', handleTabClick);
+  btn.addEventListener('touchstart', handleTabClick);
+});
+
+function handleTabClick(e) {
+  document.querySelectorAll('.tab-item').forEach(btn => btn.classList.remove('active'));
+  e.currentTarget.classList.add('active');
 }
 
 
