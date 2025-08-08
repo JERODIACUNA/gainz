@@ -228,9 +228,9 @@ displayedMembers.forEach(member => {
   if (statusFilter && status !== statusFilter) return;
 
   const statusTag = member.isExpired
-    ? `<span style="background: #f8d7da; color: #721c24; padding: 2px 6px; border-radius: 4px;">🛑 Expired</span>`
-    : `<span style="background: #d4edda; color: #155724; padding: 2px 6px; border-radius: 4px;">⏳ ${member.daysLeft} day${member.daysLeft !== 1 ? "s" : ""} left</span>`;
-
+    ? `<span style="background: #000000ff; color: #ff0000ff; padding: 2px 6px; border-radius: 4px;">Expired</span>`
+    : `<span style="background: #000000ff; color: #0586ffff; padding: 2px 6px; border-radius: 4px;"> ${member.daysLeft} day${member.daysLeft !== 1 ? "s" : ""} left</span>`;
+//⏳
   const card = `
    <div class="member-card" data-id="${member.id}" style="cursor: pointer;">
       <div class="member-image" style="display: block; cursor: pointer;">

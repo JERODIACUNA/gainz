@@ -191,7 +191,7 @@ button::before{
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 12px;
-  max-height: 60vh;
+  max-height: 55vh;
   overflow-y: auto;
   overflow-x: hidden;
   margin-top: 1rem;
@@ -297,9 +297,9 @@ button::before{
 }
 
 .member-details {
-  flex: 1;
   font-size: 0.85rem;
-  text-align: center
+  text-align: center ;
+  line-height: 1.5;   /* Add vertical spacing between lines */
 }
 
 .member-details button {
