@@ -273,24 +273,57 @@ function triggerImageUpload(memberId) {
 document.getElementById('memberImageInput').addEventListener('change', async function () {
   const file = this.files[0];
   if (!file || !selectedMemberId) return;
-
+closeMemberDetailsModal();
   try {
+    const docRef = db.collection("members").doc(selectedMemberId);
+    const docSnap = await docRef.get();
+
+    if (!docSnap.exists) throw new Error("Member not found.");
+
+    const data = docSnap.data();
+    const oldPhotoURL = data.photoURL;
+
+    // If there's an existing image, delete it from Cloudinary
+    if (oldPhotoURL) {
+      const matches = oldPhotoURL.match(/\/upload\/(?:v\d+\/)?([^\.\/]+)\./);
+      if (matches) {
+        const oldPublicId = matches[1];
+
+        // Call your Cloud Function to delete image
+        const deleteRes = await fetch(`https://us-central1-gainz-960eb.cloudfunctions.net/api/deleteImage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ publicId: oldPublicId })
+        });
+
+        const deleteResult = await deleteRes.json();
+        if (!deleteResult.success) {
+          console.warn("Old image deletion failed:", deleteResult);
+        }
+      } else {
+        console.warn("Invalid old Cloudinary URL format.");
+      }
+    }
+
+    // Upload new image
     const imageUrl = await uploadImageToCloudinary(file);
 
-    await db.collection("members").doc(selectedMemberId).update({
-      photoURL: imageUrl
-    });
+    // Update Firestore with new image
+    await docRef.update({ photoURL: imageUrl });
 
-    showImageUploadModal("Profile picture updated!");
+    showImageUploadModal("✅ Profile picture updated!");
     loadMemberData(); // Refresh UI
+
   } catch (error) {
+    console.error(error);
     showImageUploadModal("❌ Failed to upload image: " + error.message);
   }
 
-  // Reset for next upload
+  // Reset
   this.value = "";
   selectedMemberId = null;
 });
+
 
 
 function showImageUploadModal(message) {
