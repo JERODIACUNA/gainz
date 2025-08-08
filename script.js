@@ -232,7 +232,7 @@ displayedMembers.forEach(member => {
     : `<span style="background: #d4edda; color: #155724; padding: 2px 6px; border-radius: 4px;">⏳ ${member.daysLeft} day${member.daysLeft !== 1 ? "s" : ""} left</span>`;
 
   const card = `
-    <div class="member-card" onclick="openMemberDetailsModal('${member.id}')" style="cursor: pointer;">
+   <div class="member-card" data-id="${member.id}" style="cursor: pointer;">
       <div class="member-image" style="display: block; cursor: pointer;">
         <img src="${member.photoURL}" alt="${member.name}" />
       </div>
@@ -247,10 +247,18 @@ displayedMembers.forEach(member => {
 
   (member.isExpired ? expiredMembers : activeMembers).push(card);
 });
-
-
   list.innerHTML = activeMembers.join("") + expiredMembers.join("");
 }
+
+document.getElementById("member-list").addEventListener("click", function(e) {
+  const card = e.target.closest(".member-card");
+  if (!card) return;
+
+  const memberId = card.dataset.id;
+  if (!memberId) return;
+
+  openMemberDetailsModal(memberId);
+});
 
 function closeMemberDetailsModal() {
   document.getElementById('memberDetailsModal').style.display = 'none';

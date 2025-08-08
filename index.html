@@ -226,6 +226,7 @@ text-decoration: underline;">
     const modal = document.getElementById('memberDetailsModal');
     if (modal) {
       modal.style.display = 'none';
+      modal.classList.add('hidden'); // <- safe backup
     }
 
     // Your existing fade-in animations
@@ -244,7 +245,10 @@ text-decoration: underline;">
 
 <script>
   function openMemberDetailsModal(memberId) {
+  if (!memberId || typeof memberId !== "string") return;
+
   const member = displayedMembers.find(m => m.id === memberId);
+  
 
 
   if (!member) return;
