@@ -250,11 +250,6 @@ text-decoration: underline;">
       modal.classList.add('hidden'); // <- safe backup
     }
 
-    // Your existing fade-in animations
-    document.body.classList.add('bg-fade-in');
-    document.querySelectorAll('.container').forEach(function(el) {
-      el.classList.add('fade-in');
-    });
   });
   window.addEventListener('click', function(event) {
   const modal = document.getElementById('memberDetailsModal');
