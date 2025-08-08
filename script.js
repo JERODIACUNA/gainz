@@ -501,9 +501,9 @@ function closeDeleteModal() {
 let editingId = null;
 let editingMemberId = null;
 function editMember(id) {
-  
   closeMemberDetailsModal();
-    editingMemberId = id;
+  editingMemberId = id;
+
   db.collection("members").doc(id).get().then(doc => {
     if (!doc.exists) return alert("Member not found.");
 
@@ -514,9 +514,14 @@ function editMember(id) {
     document.getElementById("editType").value = data.type;
     document.getElementById("editStart").value = toLocalDatetimeString(data.startDate.toDate());
     document.getElementById("editExpires").value = toLocalDatetimeString(data.expiresAt.toDate());
+
+    // 🆕 Set the editable member number field
+    document.getElementById("editMemberNumber").value = data.memberNumber || "";
+
     document.getElementById("editModal").classList.remove("hidden");
   });
 }
+
 
 function closeEditModal() {
   document.getElementById("editModal").classList.add("hidden");
@@ -525,13 +530,14 @@ function closeEditModal() {
 }
 
 function saveEdit() {
+  const memberNumber = document.getElementById("editMemberNumber").value.trim(); // 🆕 Get member number
   const name = document.getElementById("editName").value.trim();
   const type = document.getElementById("editType").value;
   const start = new Date(document.getElementById("editStart").value);
   const expires = new Date(document.getElementById("editExpires").value);
   const message = document.getElementById("editMessage");
 
-  if (!name || isNaN(start) || isNaN(expires)) {
+  if (!name || !memberNumber || isNaN(start) || isNaN(expires)) {
     message.textContent = "❗ Please fill in all fields correctly.";
     return;
   }
@@ -540,6 +546,7 @@ function saveEdit() {
   const status = expires < new Date() ? "expired" : "active";
 
   db.collection("members").doc(editingId).update({
+    memberNumber, // 🆕 Save member number
     name,
     type,
     price,
@@ -555,6 +562,7 @@ function saveEdit() {
       message.textContent = "❌ " + err.message;
     });
 }
+
 
 function confirmRemoveMemberImage() {
   const modal = document.getElementById("confirmRemoveImageModal");
