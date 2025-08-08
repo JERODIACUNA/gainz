@@ -35,7 +35,10 @@ h2, h3, label, p{
   color: #ffffff;
 
 }
-#renewModal p, #deleteModal p, #imageUploadModal p,#imageUploadModal h3, #editModal label, #memberDetailsModal p, #memberDetailsModal h2, #confirmRemoveImageModal h2, #confirmRemoveImageModal p {
+#renewModal p, #deleteModal p, #imageUploadModal p,
+#imageUploadModal h3, #editModal label, #memberDetailsModal p, 
+#memberDetailsModal h2, #confirmRemoveImageModal h2, 
+#confirmRemoveImageModal p,#deleteResultModal h3, #deleteResultModal p {
   color: #000 !important;
 }
 /* Container */

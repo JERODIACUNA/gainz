@@ -477,7 +477,7 @@ async function deleteConfirmed() {
     .then(() => {
       closeEditModal();
       closeDeleteModal();
-      showDeleteResultModal("✅ Member deleted successfully.");
+      showDeleteResultModal("Member deleted successfully.");
       loadMemberData();
     })
     .catch(err => {
